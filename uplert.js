@@ -16,18 +16,32 @@ const httpGet = async (url, headers) => {
 };
 
 //////////////////////////////////////////////////////////////////////////////
-// GENERIC UPBANK API
+// GENERIC UPBANK APIs
 //////////////////////////////////////////////////////////////////////////////
 
 const getUp = async (path) => {
   const url = `https://api.up.com.au/api/v1/${path}`
-  const response = await httpGet(url, {'Authorization': process.env.UP_KEY});
-  let balance = response.attributes.balance.value;
-  console.log ( `Balance ${(balance < minBalance) ? 'low!' : 'OK'}` );
+  const data = await httpGet(url, {'Authorization': process.env.UP_KEY});
+  return data;
 };
+
+const getUpAccount = async (id) => {
+  const account = await getUp(`/accounts/${id}`);
+  return account;
+}
 
 //////////////////////////////////////////////////////////////////////////////
 // PAYMENTS
 //////////////////////////////////////////////////////////////////////////////
 
-getUp(`/accounts/${process.env.UP_ACCOUNT_ID}`);
+const alertLowBalance = async () => {
+  const account = await getUpAccount(process.env.UP_ACCOUNT_ID);
+  let balance = account.attributes.balance.value;
+  console.log ( `Balance ${(balance < minBalance) ? 'low!' : 'OK'}` );
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// RUN FROM COMMAND-LINE
+//////////////////////////////////////////////////////////////////////////////
+
+alertLowBalance();
