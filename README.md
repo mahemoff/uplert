@@ -1,6 +1,6 @@
 # uplert
 
-Up Banking Alerts (unofficial experiment with [UpBank's API](https://developer.up.com.au/)).
+Up Banking Alerts (unofficial experiment with [Up Bank's API](https://developer.up.com.au/)).
 
 This is currently a Node-based command line tool.
 
