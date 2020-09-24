@@ -1,8 +1,20 @@
 const r2 = require("r2");
 const aws = require('aws-sdk');
-require('dotenv').config()
+require('toml');
 
 // const url = `https://api.up.com.au/api/v1/accounts/${process.env.UP_ACCOUNT_ID}`
+
+//////////////////////////////////////////////////////////////////////////////
+// GENERIC AWS
+//////////////////////////////////////////////////////////////////////////////
+
+const setupAWS = (config) => {
+  aws.config.update({
+    accessKeyId: config.aws.key,
+    secretAccessKey: config.aws.secret,
+    region: config.aws.region
+  });
+}
 
 //////////////////////////////////////////////////////////////////////////////
 // GENERIC HTTP
@@ -35,12 +47,6 @@ const getUpAccount = async (id) => {
 //////////////////////////////////////////////////////////////////////////////
 // GENERIC AWS API
 //////////////////////////////////////////////////////////////////////////////
-
-aws.config.update({
-  accessKeyId: process.env.UPLERT_AWS_KEY,
-  secretAccessKey: process.env.UPLERT_AWS_SECRET,
-  region: process.env.UPLERT_AWS_REGION
-});
 
 const sendEmail = async (subject, message, fromEmail, toEmail) => {
 
@@ -82,7 +88,8 @@ const sendEmail = async (subject, message, fromEmail, toEmail) => {
 
 let minBalance = 2000;
   
-const alertLowBalance = async () => {
+const alertLowBalance = async (config) => {
+  console.log(aws.config);
   const account = await getUpAccount(process.env.UP_ACCOUNT_ID);
   let balance = account.attributes.balance.value;
   if (balance < minBalance) {
@@ -94,7 +101,7 @@ const alertLowBalance = async () => {
     
       Take care!`.replace(/  +/g, '');
 
-    await sendEmail(subject, message, email, email);
+    await sendEmail(subject, message, config.email, config.email);
 
     console.log('Balance low - sent email');
 
@@ -110,5 +117,7 @@ const alertLowBalance = async () => {
 //////////////////////////////////////////////////////////////////////////////
 
 (async() => {
-  alertLowBalance();
+  const config = require('config');
+  setupAWS(config);
+  alertLowBalance(config);
 })();
