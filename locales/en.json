@@ -1,0 +1,3 @@
+{
+  "lowBalanceMailBody": "Hey, this is your friendly Uplert here.\n\nYour Up Bank balance is low: ${{balance}}.\n\nTake care!"
+}

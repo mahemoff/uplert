@@ -1,8 +1,12 @@
 const r2 = require("r2");
 const aws = require('aws-sdk');
-require('toml');
+const path = require('path')
+const { I18n } = require('i18n')
 
-// const url = `https://api.up.com.au/api/v1/accounts/${process.env.UP_ACCOUNT_ID}`
+const i18n = new I18n({
+  locales: ['en'],
+  directory: path.join(__dirname, 'locales')
+})
 
 //////////////////////////////////////////////////////////////////////////////
 // GENERIC AWS
@@ -33,14 +37,14 @@ const httpGet = async (url, headers) => {
 // GENERIC UP BANK APIs
 //////////////////////////////////////////////////////////////////////////////
 
-const getUp = async (path) => {
+const getUp = async (config, path) => {
   const url = `https://api.up.com.au/api/v1/${path}`
-  const data = await httpGet(url, {'Authorization': process.env.UP_KEY});
+  const data = await httpGet(url, {'Authorization': config.upbank.key});
   return data;
 };
 
-const getUpAccount = async (id) => {
-  const account = await getUp(`/accounts/${id}`);
+const getUpAccount = async (config, id) => {
+  const account = await getUp(config, `/accounts/${id}`);
   return account;
 }
 
@@ -53,6 +57,7 @@ const sendEmail = async (subject, message, fromEmail, toEmail) => {
   const ses = new aws.SES({apiVersion: '2010-12-01'});
 
   const params = {
+    Source: `Uplert <${fromEmail}>`,
     Destination: {
       ToAddresses: [toEmail]
     },
@@ -86,23 +91,18 @@ const sendEmail = async (subject, message, fromEmail, toEmail) => {
 // PAYMENTS
 //////////////////////////////////////////////////////////////////////////////
 
-let minBalance = 2000;
-  
 const alertLowBalance = async (config) => {
-  console.log(aws.config);
-  const account = await getUpAccount(process.env.UP_ACCOUNT_ID);
+
+  id = process.env.UP_ACCOUNT_ID;
+  const account = await getUpAccount(config, id);
   let balance = account.attributes.balance.value;
-  if (balance < minBalance) {
-    subject = 'Up Bank balance is low (Uplert)'
-    email = process.env.UPLERT_EMAIL; // both sender and receiver
-    message = `Hey, this is your friendly Uplert here.
-      
-      Your Up Bank balance is low: $${balance}.
-    
-      Take care!`.replace(/  +/g, '');
+  if (balance < config.minimumBalance) {
+
+    subject = 'Up Bank balance is low';
+    email = config.email; // assume sender and receiver is same for now
+    message = i18n.__('lowBalanceMailBody', { balance: balance });
 
     await sendEmail(subject, message, config.email, config.email);
-
     console.log('Balance low - sent email');
 
   } else {

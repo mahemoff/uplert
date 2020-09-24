@@ -105,3 +105,6 @@ dist
 
 # Config with credentials etc
 config/*.toml
+
+# Tmp folder for experiments
+tmp
