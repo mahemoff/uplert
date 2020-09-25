@@ -2,8 +2,10 @@
 // IMPORTS
 //////////////////////////////////////////////////////////////////////////////
 
-const config = require('config');
-const alerter = require('./lib/app/alerter');
+import config from 'config';
+import * as alerter from './lib/app/alerter.mjs';
+//const alerter = require('./lib/app/alerter');
+//import { alertLowBalance } from './lib/app/alerter.mjs';
 
 //////////////////////////////////////////////////////////////////////////////
 // RUN FROM COMMAND-LINE
