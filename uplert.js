@@ -6,6 +6,23 @@ import config from 'config';
 import * as alerter from './lib/app/alerter.mjs';
 
 //////////////////////////////////////////////////////////////////////////////
+// I18N IMPORT
+// We'll load strings and make them part of app config
+//////////////////////////////////////////////////////////////////////////////
+
+import i18n from 'i18n';
+import path from 'path';
+import { fileURLToPath } from 'url';
+const pwd=path.dirname(fileURLToPath(import.meta.url));
+const locPath=path.join(pwd, './locales');
+
+i18n.configure({
+  locales: ['en'],
+  directory: locPath
+})
+config.i18n = i18n;
+
+//////////////////////////////////////////////////////////////////////////////
 // RUN FROM COMMAND-LINE
 //////////////////////////////////////////////////////////////////////////////
 
