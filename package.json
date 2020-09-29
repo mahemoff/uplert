@@ -12,10 +12,14 @@
   "dependencies": {
     "aws-sdk": "^2.757.0",
     "config": "^3.3.1",
+    "currency-symbol": "^1.0.6",
+    "currency-symbol-map": "^4.0.4",
+    "currency.js": "^2.0.3",
     "dotenv": "^8.2.0",
     "i18n": "^0.13.2",
     "r2": "^2.0.1",
-    "toml": "^3.0.0"
+    "toml": "^3.0.0",
+    "yargs": "^16.0.3"
   },
   "type": "module"
 }
