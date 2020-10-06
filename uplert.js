@@ -38,7 +38,7 @@ async function runAlert(argv) {
     console.error('ERROR: No account');
     return;
   }
-  alerter.alertLowBalance(config, account);
+  alerter.alertLowBalance(config, account, argv.minimum);
 }
 
 async function runSummary(argv) {
@@ -52,12 +52,19 @@ async function runSummary(argv) {
   const {argv} = yargs(hideBin(process.argv))
     .command(
       'alert',
-      'send alert if under balance',
+      'Send an email alert if account is under balance',
       (yargs) =>
         {
-          yargs.option(
+          yargs
+          .option(
             'account', {
-              description: 'name of account to alert about'
+              description: 'name of account to alert about (defaults to first transactional account)'
+            }
+          )
+          .option(
+            'minimum', {
+              description: 'minimum balance amount (in dollars)',
+              default: config.minimum || 100
             }
           )
         },
