@@ -9,9 +9,7 @@ import yargs from 'yargs'
 //import * as currency from 'currency.js';
 import { hideBin } from 'yargs/helpers'
 import * as alerter from './lib/app/alerter.mjs';
-import getSymbolFromCurrency from 'currency-symbol-map'
-
-
+import Summary from './lib/app/summary.mjs'
 import * as upBank from './lib/util/upbank.mjs';
 
 //////////////////////////////////////////////////////////////////////////////
@@ -42,19 +40,10 @@ config.i18n = i18n;
       alerter.alertLowBalance(config);
     })
     .command('summary [format]', 'summary of all accounts', (yargs) => {
-      yargs.positional('format', { describe: 'format to render', default: 'basic' })
-    }, async (argv) => {
-      const format = argv.format.toLowerCase();
-      const accounts = await upBank.getAccounts(config)
-      if (format=='basic') {
-        console.log(accounts.map( (account) => {
-          const attribs = account.attributes;
-          const symbol = getSymbolFromCurrency(attribs.balance.currencyCode);
-          return `${attribs.displayName}: ${attribs.balance.currencyCode} ${symbol}${attribs.balance.value} (${attribs.accountType.toLowerCase()})`
-        }).join("\n"));
-      } else if (format=='json') {
-        console.info(JSON.stringify(accounts, null, 2));
-      }
+      yargs.positional('format', { describe: 'format to render', default: 'basic' })}, async (argv) => {
+      const accounts = await upBank.getAccounts(config);
+      const summary = new Summary(accounts, argv.format);
+      console.log(summary.render());
     })
     .demandCommand(1).argv
 
