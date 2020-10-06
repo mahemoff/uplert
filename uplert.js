@@ -32,8 +32,13 @@ config.i18n = i18n;
 // RUN FROM COMMAND-LINE
 //////////////////////////////////////////////////////////////////////////////
 
-async function runAlert() {
-  alerter.alertLowBalance(config);
+async function runAlert(argv) {
+  const account = await upBank.lookupAccount(config, argv.account);
+  if (!account) {
+    console.error('ERROR: No account');
+    return;
+  }
+  alerter.alertLowBalance(config, account);
 }
 
 async function runSummary(argv) {
@@ -48,8 +53,15 @@ async function runSummary(argv) {
     .command(
       'alert',
       'send alert if under balance',
-      () => {},
-      runAlert
+      (yargs) =>
+        {
+          yargs.option(
+            'account', {
+              description: 'name of account to alert about'
+            }
+          )
+        },
+      async (argv) => { runAlert(argv); }
     )
     .command(
         'summary [format]',
@@ -64,10 +76,7 @@ async function runSummary(argv) {
               }
             )
           },
-        async (argv) =>
-          {
-            runSummary(argv);
-          }
+        async (argv) => { runSummary(argv); }
       )
     .demandCommand(1).argv
 

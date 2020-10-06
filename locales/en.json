@@ -1,3 +1,4 @@
 {
-  "lowBalanceMailBody": "Hey, this is your friendly Uplert here.\n\nYour Up Bank balance is low: ${{balance}}.\n\nTake care!"
+  "lowBalanceMailSubject": "Up Bank {{account}} balance warning",
+  "lowBalanceMailBody": "Hey, this is your friendly Uplert here.\n\nYour Up Bank balance for {{account}} is low: ${{balance}}.\n\nTake care!"
 }
